@@ -7,34 +7,41 @@ A Music (among other things) Bot for Discord
 I used API keys in order to query chatgpt using Discord as an interface. This was an interesting project and was fun to see behind the scenes of an AI query. The issue with this bot was the tokens, as I ran out and did not fund more in order to keep this bot up and running. 
 
 ```
-@bot.command()
-async def chat(message, *, arg):
-        
-    response = openai.Completion.create(
+        if message.content.startswith('$Chat') or message.content.startswith('$chat'):
+            
+            msginp = message.content
+            
+            response = openai.Completion.create(
                 model="text-davinci-003",
-                prompt= arg,
-                temperature=0.75,
+                prompt= msginp[6:],
+                temperature=0.5,
                 max_tokens=100,
-                top_p=1.0,
+                top_p=0.3,
                 frequency_penalty=0.5,
                 presence_penalty=0.0
-                )
+            )
             
-    await message.send(response['choices'][0]['text'])
+            await message.channel.send(response['choices'][0]['text'])
+            
+        
+        #Another very similar example:
+        
+        #Command:
+        if message.content.startswith('$MilkArt') or message.content.startswith('$milkart'):
+            
+            #Message Content:
+            msginp = message.content
+            
+            #Image Creation through openai:
+            response = openai.Image.create(prompt=msginp[6:],
+                                            n=1,
+                                            size="1024x1024"
+                                            )
 
-@bot.command()
-async def art(message, *, arg):
+            image_url = response['data'][0]['url']
             
-    #Image Creation through openai:
-    response = openai.Image.create(prompt=arg[4:],
-                                    n=1,
-                                    size="1024x1024"
-                                    )
-
-    image_url = response['data'][0]['url']
-            
-    #Send the Image as a URl. 
-    await message.channel.send(image_url)
+            #Send the Image as a URl. 
+            await message.channel.send(image_url)
 
 ```
 
